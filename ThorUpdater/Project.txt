@@ -1,5 +1,0 @@
-appName = Log4VFP
-appID = Log4VFP
-majorVersion = 1.0
-excludeFiles = *.bak,*.bat,*.fxp,applog.txt,*.suo,clrhost.dll,wwdotnetbridge.*,README.md,.gitignore
-excludeFolders = *Docs*,*ThorUpdater*,*bin*,*obj*,*packages*
