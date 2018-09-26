@@ -6,17 +6,15 @@ Documentation for Log4NET can be found at [https://logging.apache.org/log4net](h
 
 ## Installing Log4VFP
 
-You can install Log4VFP one of three ways:
+You can install Log4VFP one of two ways:
 
 * Click the Clone or Download button and choose Download ZIP to download the source code for Log4VFP.
 
 * Click the Clone or Download button, copy the URL displayed in the dialog, and use that to clone the repository using Git on your system.
 
-* If you use Thor, choose Check for Updates from the Thor menu, select Log4VFP in the dialog that appears, and click Install Updates.
-
 **Important**: Log4VFP requires wwDotNetBridge by Rick Strahl, which isn't included in the repository or downloads. If you already have wwDotNetBridge, adjust the sample code included with this project to include the path to  wwDotNetBridge's files. If you do not have wwDotNetBridge, you can get it from its repository at [https://github.com/RickStrahl/wwDotnetBridge](https://github.com/RickStrahl/wwDotnetBridge).
 
-If you want to modify the source code for the C# Log4VFP wrapper, you will also need to retrieve the Log4NET package. The easiest way to do that is to open the Log4VFP solution (Log4VFP.sln in the Log4VFP subdirectory) in Visual Studio and choose Rebuild Solution from the Build menu. 
+If you want to modify the source code for the C# Log4VFP wrapper, you will also need to retrieve the Log4NET package. The easiest way to do that is to open the Log4VFP solution (Log4VFP.sln in the Log4VFPSource subdirectory) in Visual Studio and choose Rebuild Solution from the Build menu. 
 
 ## Log4VFP components
 
