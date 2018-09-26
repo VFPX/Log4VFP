@@ -54,7 +54,7 @@ return toUpdateObject
 procedure GetNotes
 local lcNotes
 text to lcNotes noshow
-Project Explorer
+Log4VFP
 
 Project Manager: Doug Hennig
 
