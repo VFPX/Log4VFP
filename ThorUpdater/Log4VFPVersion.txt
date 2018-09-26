@@ -2,7 +2,7 @@ lparameters toUpdateObject
 local ldDate, ;
 	lnJulian, ;
 	lcJulian
-ldDate   = date(2018,9,24)
+ldDate   = date(2018,9,26)
 lnJulian = val(sys(11, ldDate)) - val(sys(11, {^2000-01-01}))
 lcJulian = padl(transform(lnJulian), 4, '0')
 toUpdateObject.AvailableVersion = 'Log4VFP-1.0.' + lcJulian + ;

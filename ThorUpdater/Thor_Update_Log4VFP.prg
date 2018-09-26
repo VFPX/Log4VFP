@@ -4,8 +4,7 @@ local lcAppName, ;
 	lcRepositoryURL, ;
 	lcDownloadsURL, ;
 	lcVersionFileURL, ;
-	lcZIPFileURL, ;
-	lcRegisterWithThor
+	lcZIPFileURL
 
 * Set the project settings; edit these for your specific project.
 
@@ -42,7 +41,6 @@ with toUpdateObject
 	.ApplicationName      = lcAppName
 	.Component            = 'No'
 	.VersionLocalFilename = lcAppID + 'VersionFile.txt'
-	.RegisterWithThor     = lcRegisterWithThor
 	.VersionFileURL       = lcVersionFileURL
 	.SourceFileUrl        = lcZIPFileURL
 	.Link                 = lcRepositoryURL

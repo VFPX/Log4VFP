@@ -20,7 +20,7 @@ If you want to modify the source code for the C# Log4VFP wrapper, you will also 
 
 ## Log4VFP components
 
-Log4VFP just consists of a single file: Log4VFP.dll, a C# wrapper DLL built from the C# solution in the Log4VFP folder. Deploy this file with your application; it does not require any registration on the user's system.
+Log4VFP just consists of two files: Log4VFP.dll, a C# wrapper DLL built from the C# solution in the Log4VFP folder, and Log4NET.dll, the Log4NET assembly. Deploy these files with your application; they do not require any registration on the user's system.
 
 In addition, as noted above, Log4VFP uses wwDotNetBridge, so you'll need to add wwDotNetBridge.prg to your project so it's built into the EXE plus deploy ClrHost.dll and wwDotNetBridge.dll with your application; neither of these files need registration either.
 
