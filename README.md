@@ -229,7 +229,19 @@ database.config specifies logging to a table named Log in a SQL Server database 
 </configuration>
 ```
 
-Set the "connectionString" element to the desired connection string. Adjust the "commandText" and "parameter" elements as necessary, depending on the name and structure of your log table.
+Set the "connectionString" element to the desired connection string. Adjust the "commandText" and "parameter" elements as necessary, depending on the name and structure of your log table. Here's the structure of the Log table expected by this sample config file:
+
+```SQL
+CREATE TABLE [dbo].[Log] (
+    [Id] [int] IDENTITY (1, 1) NOT NULL,
+    [Date] [datetime] NOT NULL,
+    [Thread] [varchar] (255) NOT NULL,
+    [Level] [varchar] (50) NOT NULL,
+    [Logger] [varchar] (255) NOT NULL,
+    [Message] [varchar] (4000) NOT NULL,
+    [Exception] [varchar] (2000) NULL
+)
+```
 
 ## Milestones
 

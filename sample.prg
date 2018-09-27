@@ -52,7 +52,7 @@ endtry
 inkey(2, 'H')
 loLogManager.StartMilestone()
 loLogger.InfoFormat('=================> Started process at {0}', datetime())
-inkey(5, 'H')
+inkey(2, 'H')
 loLogger.Info('Process done')
 
 * Shut down the log manager and display the log.
