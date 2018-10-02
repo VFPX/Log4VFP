@@ -4,6 +4,8 @@ Log4NET is a powerful diagnostic logging library for .NET applications. Log4VFP 
 
 Documentation for Log4NET can be found at [https://logging.apache.org/log4net](https://logging.apache.org/log4net). I won't reproduce the documentation here but will just highlight some ways you can use Log4VFP.
 
+Thanks to Rick Strahl for creating the VFP wrapper class.
+
 ## Installing Log4VFP
 
 You can install Log4VFP one of two ways:
@@ -18,95 +20,81 @@ If you want to modify the source code for the C# Log4VFP wrapper, you will also 
 
 ## Log4VFP components
 
-Log4VFP just consists of two files: Log4VFP.dll, a C# wrapper DLL built from the C# solution in the Log4VFP folder, and Log4NET.dll, the Log4NET assembly. Deploy these files with your application; they do not require any registration on the user's system. See Sample.prg for an example of how to use Log4VFP.
+Log4VFP consists of three files:
 
-To make Log4VFP easier to use, Rick Strahl creates a wrapper class for it called Log4VFP in Log4VFP.prg. See SampleClass.prg for an example of how to use this class.
+* Log4VFP.dll, a C# wrapper DLL built from the C# solution in the Log4VFP folder
 
-In addition, as noted above, Log4VFP uses wwDotNetBridge, so you'll need to add wwDotNetBridge.prg to your project so it's built into the EXE plus deploy ClrHost.dll and wwDotNetBridge.dll with your application; neither of these files need registration either.
+* Log4NET.dll, the Log4NET assembly
 
-Finally, you'll need a configuration file, which can be named anything you wish, which contains XML that tells Log4NET how to perform diagnostic logging. Log4VFP includes two sample configuration files, compact.config and verbose.config, that provide logging to a text file in a compact and verbose format, respectively. The Log4VFP wrapper class creates a configuration file automatically if one doesn't exist.
+* Log4VFP.prg, which contains a VFP class that wraps the functionality of the C# classes
+
+Include the PRG in your project so it's built into the EXE and deploy the two DLLs with your application; they do not require any registration on the user's system. 
+
+In addition, as noted above, Log4VFP uses wwDotNetBridge, so you'll need to add wwDotNetBridge.prg to your project plus deploy ClrHost.dll and wwDotNetBridge.dll with your application; neither of these files need registration either.
+
+Finally, you'll need a configuration file, named anything you wish, which contains XML that tells Log4NET how to perform diagnostic logging. Log4VFP includes three sample configuration files:
+
+* compact.config: logs to a text file in a compact format
+
+* verbose.config: logs to a text file in a verbose format
+
+* database.config: logs to a SQL Server database
+
+The VFP Log4VFP wrapper class creates a configuration file named log4net.config (similar to compact.config) automatically if you don't specify one and it doesn't already exist.
 
 ## Starting Log4VFP
 
-To initialize Log4VFP, you can either manage the .NET classes yourself or you can use the Log4VFP wrapper class.
-
-### Managing yourself
-
-Start by instantiating wwDotNetBridge (your application may already do this if you're using wwDotNetBridge for other things) and load the Log4VFP assembly:
+Start by instantiating the Log4VFP class:
 
 ```Fox
-do wwDotNetBridge
-oBridge = GetwwDotNetBridge()
-oBridge.LoadAssembly('Log4VFP.dll')
+loLogger = newobject('Log4VFP', 'Log4VFP.prg')
 ```
 
-Next, create an instance of the LogManager class in Log4VFP.dll, passing it the name and path of the configuration file, the name and path of the file to log to, and the name of the current user (if your application doesn't have user names, you can just pass a blank string). Then ask the LogManager object to create a logger object, which is an instance of an object using the Log4NET ILog interface:
-
-```Fox
-lcConfigFile = fullpath('verbose.config')
-	&& the name of the configuration file to use
-lcLogFile    = fullpath('applog.txt')
-	&& the name of the log file to write to
-lcUser       = 'DHENNIG'
-	&& the name of the current user
-lcName       = 'MyLogger'
-	&& the name of the logger
-
-loLogManager = oBridge.CreateInstance('Log4VFP.LogManager', ;
-    lcConfigFile, lcLogFile, lcUser)
-loLogger     = loLogManager.GetLogger(lcName)
-```
-
-You can have multiple logging objects, each with a different logger name. The name is really only used for advanced purposes so you can pass anything you wish to the GetLogger method.
-
-### Using the wrapper class
-
-Start by running Log4VFP and then instantiate the Log4VFP class:
+If you run Log4VFP first, you can use CREATEOBJECT instead of NEWOBJECT because the program uses SET PROCEDURE TO Log4VFP ADDITIVE:
 
 ```Fox
 do Log4VFP
-loLog = createobject('Log4VFP')
+loLogger = createobject('Log4VFP')
 ```
 
-This sets up wwDotNetBridge and loads the Log4VFP assembly. Then call the Open method, specifying the name and path of the file to log to and the name of the logger (a SYS(2015) value is used by default) to create a logger object:
+Next call the Open method, specifying the name and path of the file to log to:
 
 ```Fox
-lcLogFile = fullpath('applog.txt')
-loLogger  = loLog.Open(lcLogFile)
+lcLogFile = lower(fullpath('applog.txt'))
+loLogger.Open(lcLogFile)
 ```
 
-By default, Open uses log4net.config in the current folder as its configuration file (this file is created if it doesn't already exist) and the name of the Windows user running the application as the user name. If you want to change those, set the cConfigurationFile and cUser properties as necessary before calling Open.
+By default, Open uses log4net.config in the current folder as its configuration file and the name of the Windows user running the application as the user name. If you want to change those, set the cConfigurationFile and cUser properties as necessary before calling Open:
+
+```Fox
+lcConfigFile = fullpath('verbose.config')
+lcUser       = 'DHENNIG'
+loLogger = newobject('Log4VFP', 'Log4VFP.prg')
+loLogger.cConfigurationFile = lcConfigFile
+loLogger.cUser = lcUser
+loLogger.Open(lcLogFile)
+```
 
 ## Using Log4VFP
 
-Now that you have a logger object, you can write to the log file using one of these methods:
+Now that you have a logger object, you can write to the log file using these methods:
 
-* Info: writes an INFO message to the log
+* LogInfo: writes an INFO message to the log
 
-* InfoFormat: write a formatted INFO string with parameters to the log
+* LogDebug: writes a DEBUG message to the log
 
-* Debug: writes a DEBUG message to the log
+* LogWarn: writes a WARN message to the log
 
-* DebugFormat: write a formatted DEBUG string with parameters to the log
+* LogError: writes an ERROR message to the log
 
-* Warn: writes a WARN message to the log
-
-* WarnFormat: write a formatted WARN string with parameters to the log
-
-* Error: writes an ERROR message to the log
-
-* ErrorFormat: write a formatted ERROR string with parameters to the log
-
-* Fatal: writes a FATAL message to the log
-
-* FatalFormat: write a formatted FATAL string with parameters to the log
+* LogFatal: writes a FATAL message to the log
 
 INFO, DEBUG, WARN, ERROR, and FATAL are different levels of logging. You can filter Log4NET to only write certain levels to the log, allowing you to determine how verbose the log is for a particular run of the application (recording all messages or only errors, for example). You decide which things are INFO, which are DEBUG, and so on by calling the appropriate method in your code.
 
-The methods without "Format" in the name accept a single parameter: the message to write to the log. You don't have to worry about the user name, the application name, or the date/time of the message; the logging pattern described in the configuration file (discussed later) determines what's written to the log. Here's an example:
+Pass these methods a single parameter: the message to write to the log. You don't have to worry about the user name, the application name, or the date/time of the message; the logging pattern described in the configuration file (discussed later) determines what's written to the log. Here's an example:
 
 ```Fox
-loLogger.Info('=================> App started')
+loLogger.LogInfo('=================> App started')
 ```
 
 Depending on what the logging pattern is in the configuration file, the log file entry for this message may look like this:
@@ -125,10 +113,10 @@ or like this:
 
 or something else.
 
-The *Format methods accept multiple parameters: a message string with placeholders ({0} for the first parameter, {1} for the second, and so on) followed by parameters that are inserted into the placeholders. For example:
+You can also pass these methods a message string with placeholders ({0} for the first parameter, {1} for the second, and so on) followed by up to 10 parameters that are inserted into the placeholders. For example:
 
 ```Fox
-loLogger.InfoFormat('Using {0} build {1} {2}', os(1), os(5), os(7))
+loLogger.LogInfo('Using {0} build {1} {2}', os(1), os(5), os(7))
 ```
 
 displays this message on my system:
@@ -269,21 +257,11 @@ CREATE TABLE [dbo].[Log] (
 
 ## Milestones
 
-You can record the start and end of certain processes in your application by starting "milestones". To start a milestone, call the StartMilestone method of the LogManager (not logger) object if you're managing the .NET classes yourself or call the StartMilestone method of the wrapper class. For example, for managed yourself code:
+You can record the start and end of certain processes in your application by starting "milestones". To start a milestone, call the StartMilestone method of the logger object, optionally passing it a message to log. For example:
 
 ```Fox
-loLogManager.StartMilestone()
-loLogger.InfoFormat('=================> Started process at {0}', datetime())
-inkey(5, 'H')
-loLogger.Info('Process done')
-```
-
-For wrapper code:
-
-```Fox
-loLog.StartMilestone()
-loLogger.InfoFormat('=================> Started process at {0}', datetime())
-inkey(5, 'H')
+loLogger.StartMilestone('=================> Started process')
+* some code here that takes a while to run
 loLogger.Info('Process done')
 ```
 

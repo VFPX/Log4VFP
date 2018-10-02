@@ -1,7 +1,4 @@
-*** wwDotnetBridge dependency
-DO wwDotnetBridge
 SET PROCEDURE TO Log4Vfp ADDITIVE
-
 RETURN
 
 *************************************************************
@@ -30,7 +27,7 @@ Class Log4Vfp
 #ENDIF
 
 oBridge = null
-oLog = null
+oLogger = null
 oLogManager = null
 
 cConfigurationFile = LOWER(FULLPATH("Log4Net.config"))
@@ -46,6 +43,9 @@ cUser = SUBSTR(SYS(0),AT("#",SYS(0)) + 2)
 ***    Return:
 ************************************************************************
 FUNCTION Init()
+
+*** wwDotnetBridge dependency
+DO wwDotnetBridge
 
 this.oBridge = GetwwDotnetBridge()
 IF VARTYPE(this.oBridge) # "O" 
@@ -88,8 +88,8 @@ IF VARTYPE(THIS.oLogManager) # "O"
 	ERROR "Unable to create Log Manager: " + this.oBridge.cErrorMsg
 ENDIF
 
-loLogger = THIS.oLogManager.GetLogger(lcName)	
-RETURN loLogger
+This.oLogger = THIS.oLogManager.GetLogger(lcName)	
+RETURN This.oLogger
 ENDFUNC
 *   Open
 
@@ -152,10 +152,13 @@ ENDFUNC
 ***      Pass:
 ***    Return:
 ************************************************************************
-FUNCTION StartMileStone()
+FUNCTION StartMileStone(tcMessage)
 
 IF VARTYPE(this.oLogManager) = "O"
 	this.oLogManager.StartMileStone()
+	if vartype(tcMessage) = 'C' and not empty(tcMessage)
+		This.LogInfo(tcMessage)
+	endif
 	RETURN .T.
 ENDIF
 
@@ -174,13 +177,277 @@ ENDFUNC
 FUNCTION Shutdown()
 
 IF VARTYPE(this.oLogManager) = "O"
-   this.oLogManager.Shutdown()   
+   this.oLogManager.Shutdown()
    THIS.oLogManager = null
 ENDIF
+This.oLogger = .NULL.
 
 
 ENDFUNC
 *   Shutdown
+
+************************************************************************
+*  Destroy
+****************************************
+***  Function: Shuts down the log Session
+***    Assume:
+***      Pass:
+***    Return:
+************************************************************************
+
+function Destroy
+This.Shutdown()
+endfunc
+
+************************************************************************
+* LogInfo
+****************************************
+***  Function: Logs an INFO message
+***    Assume:
+***      Pass: The message to log and up to 10 parameters to be inserted
+***				into placeholders in the message
+***    Return:
+************************************************************************
+function LogInfo(tcMessage, tuParam1, tuParam2, tuParam3, tuParam4, ;
+	tuParam5, tuParam6, tuParam7, tuParam8, tuParam9, tuParam10)
+local lnParams
+lnParams = pcount()
+do case
+	case vartype(This.oLogger) <> 'O'
+		return .F.
+	case lnParams = 1
+		This.oLogger.Info(tcMessage)
+	case lnParams = 2
+		This.oLogger.InfoFormat(tcMessage, tuParam1)
+	case lnParams = 3
+		This.oLogger.InfoFormat(tcMessage, tuParam1, tuParam2)
+	case lnParams = 4
+		This.oLogger.InfoFormat(tcMessage, tuParam1, tuParam2, tuParam3)
+	case lnParams = 5
+		This.oLogger.InfoFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4)
+	case lnParams = 6
+		This.oLogger.InfoFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5)
+	case lnParams = 7
+		This.oLogger.InfoFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6)
+	case lnParams = 8
+		This.oLogger.InfoFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7)
+	case lnParams = 9
+		This.oLogger.InfoFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7, tuParam8)
+	case lnParams = 10
+		This.oLogger.InfoFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7, tuParam8, tuParam9)
+	case lnParams = 11
+		This.oLogger.InfoFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7, tuParam8, tuParam9, ;
+			tuParam10)
+endcase
+return .T.
+endfunc
+
+************************************************************************
+* LogError
+****************************************
+***  Function: Logs an ERROR message
+***    Assume:
+***      Pass: The message to log and up to 10 parameters to be inserted
+***				into placeholders in the message
+***    Return:
+************************************************************************
+function LogError(tcMessage, tuParam1, tuParam2, tuParam3, tuParam4, ;
+	tuParam5, tuParam6, tuParam7, tuParam8, tuParam9, tuParam10)
+local lnParams
+lnParams = pcount()
+do case
+	case vartype(This.oLogger) <> 'O'
+		return .F.
+	case lnParams = 1
+		This.oLogger.Error(tcMessage)
+	case lnParams = 2
+		This.oLogger.ErrorFormat(tcMessage, tuParam1)
+	case lnParams = 3
+		This.oLogger.ErrorFormat(tcMessage, tuParam1, tuParam2)
+	case lnParams = 4
+		This.oLogger.ErrorFormat(tcMessage, tuParam1, tuParam2, tuParam3)
+	case lnParams = 5
+		This.oLogger.ErrorFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4)
+	case lnParams = 6
+		This.oLogger.ErrorFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5)
+	case lnParams = 7
+		This.oLogger.ErrorFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6)
+	case lnParams = 8
+		This.oLogger.ErrorFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7)
+	case lnParams = 9
+		This.oLogger.ErrorFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7, tuParam8)
+	case lnParams = 10
+		This.oLogger.ErrorFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7, tuParam8, tuParam9)
+	case lnParams = 11
+		This.oLogger.ErrorFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7, tuParam8, tuParam9, ;
+			tuParam10)
+endcase
+return .T.
+endfunc
+
+************************************************************************
+* LogWarn
+****************************************
+***  Function: Logs a WARN message
+***    Assume:
+***      Pass: The message to log and up to 10 parameters to be inserted
+***				into placeholders in the message
+***    Return:
+************************************************************************
+function LogWarn(tcMessage, tuParam1, tuParam2, tuParam3, tuParam4, ;
+	tuParam5, tuParam6, tuParam7, tuParam8, tuParam9, tuParam10)
+local lnParams
+lnParams = pcount()
+do case
+	case vartype(This.oLogger) <> 'O'
+		return .F.
+	case lnParams = 1
+		This.oLogger.Warn(tcMessage)
+	case lnParams = 2
+		This.oLogger.WarnFormat(tcMessage, tuParam1)
+	case lnParams = 3
+		This.oLogger.WarnFormat(tcMessage, tuParam1, tuParam2)
+	case lnParams = 4
+		This.oLogger.WarnFormat(tcMessage, tuParam1, tuParam2, tuParam3)
+	case lnParams = 5
+		This.oLogger.WarnFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4)
+	case lnParams = 6
+		This.oLogger.WarnFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5)
+	case lnParams = 7
+		This.oLogger.WarnFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6)
+	case lnParams = 8
+		This.oLogger.WarnFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7)
+	case lnParams = 9
+		This.oLogger.WarnFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7, tuParam8)
+	case lnParams = 10
+		This.oLogger.WarnFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7, tuParam8, tuParam9)
+	case lnParams = 11
+		This.oLogger.WarnFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7, tuParam8, tuParam9, ;
+			tuParam10)
+endcase
+return .T.
+endfunc
+
+************************************************************************
+* LogDebug
+****************************************
+***  Function: Logs a DEBUG message
+***    Assume:
+***      Pass: The message to log and up to 10 parameters to be inserted
+***				into placeholders in the message
+***    Return:
+************************************************************************
+function LogDebug(tcMessage, tuParam1, tuParam2, tuParam3, tuParam4, ;
+	tuParam5, tuParam6, tuParam7, tuParam8, tuParam9, tuParam10)
+local lnParams
+lnParams = pcount()
+do case
+	case vartype(This.oLogger) <> 'O'
+		return .F.
+	case lnParams = 1
+		This.oLogger.Debug(tcMessage)
+	case lnParams = 2
+		This.oLogger.DebugFormat(tcMessage, tuParam1)
+	case lnParams = 3
+		This.oLogger.DebugFormat(tcMessage, tuParam1, tuParam2)
+	case lnParams = 4
+		This.oLogger.DebugFormat(tcMessage, tuParam1, tuParam2, tuParam3)
+	case lnParams = 5
+		This.oLogger.DebugFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4)
+	case lnParams = 6
+		This.oLogger.DebugFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5)
+	case lnParams = 7
+		This.oLogger.DebugFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6)
+	case lnParams = 8
+		This.oLogger.DebugFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7)
+	case lnParams = 9
+		This.oLogger.DebugFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7, tuParam8)
+	case lnParams = 10
+		This.oLogger.DebugFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7, tuParam8, tuParam9)
+	case lnParams = 11
+		This.oLogger.DebugFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7, tuParam8, tuParam9, ;
+			tuParam10)
+endcase
+return .T.
+endfunc
+
+************************************************************************
+* LogFatal
+****************************************
+***  Function: Logs a FATAL message
+***    Assume:
+***      Pass: The message to log and up to 10 parameters to be inserted
+***				into placeholders in the message
+***    Return:
+************************************************************************
+function LogFatal(tcMessage, tuParam1, tuParam2, tuParam3, tuParam4, ;
+	tuParam5, tuParam6, tuParam7, tuParam8, tuParam9, tuParam10)
+local lnParams
+lnParams = pcount()
+do case
+	case vartype(This.oLogger) <> 'O'
+		return .F.
+	case lnParams = 1
+		This.oLogger.Fatal(tcMessage)
+	case lnParams = 2
+		This.oLogger.FatalFormat(tcMessage, tuParam1)
+	case lnParams = 3
+		This.oLogger.FatalFormat(tcMessage, tuParam1, tuParam2)
+	case lnParams = 4
+		This.oLogger.FatalFormat(tcMessage, tuParam1, tuParam2, tuParam3)
+	case lnParams = 5
+		This.oLogger.FatalFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4)
+	case lnParams = 6
+		This.oLogger.FatalFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5)
+	case lnParams = 7
+		This.oLogger.FatalFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6)
+	case lnParams = 8
+		This.oLogger.FatalFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7)
+	case lnParams = 9
+		This.oLogger.FatalFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7, tuParam8)
+	case lnParams = 10
+		This.oLogger.FatalFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7, tuParam8, tuParam9)
+	case lnParams = 11
+		This.oLogger.FatalFormat(tcMessage, tuParam1, tuParam2, tuParam3, ;
+			tuParam4, tuParam5, tuParam6, tuParam7, tuParam8, tuParam9, ;
+			tuParam10)
+endcase
+return .T.
+endfunc
 
 ENDDEFINE
 *EOC Log4Vfp 
