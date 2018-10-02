@@ -18,17 +18,21 @@ If you want to modify the source code for the C# Log4VFP wrapper, you will also 
 
 ## Log4VFP components
 
-Log4VFP just consists of two files: Log4VFP.dll, a C# wrapper DLL built from the C# solution in the Log4VFP folder, and Log4NET.dll, the Log4NET assembly. Deploy these files with your application; they do not require any registration on the user's system.
+Log4VFP just consists of two files: Log4VFP.dll, a C# wrapper DLL built from the C# solution in the Log4VFP folder, and Log4NET.dll, the Log4NET assembly. Deploy these files with your application; they do not require any registration on the user's system. See Sample.prg for an example of how to use Log4VFP.
+
+To make Log4VFP easier to use, Rick Strahl creates a wrapper class for it called Log4VFP in Log4VFP.prg. See SampleClass.prg for an example of how to use this class.
 
 In addition, as noted above, Log4VFP uses wwDotNetBridge, so you'll need to add wwDotNetBridge.prg to your project so it's built into the EXE plus deploy ClrHost.dll and wwDotNetBridge.dll with your application; neither of these files need registration either.
 
-Finally, you'll need a configuration file, which can be named anything you wish, which contains XML that tells Log4NET how to perform diagnostic logging. Log4VFP includes two sample configuration files, compact.config and verbose.config, that provide logging to a text file in a compact and verbose format, respectively.
+Finally, you'll need a configuration file, which can be named anything you wish, which contains XML that tells Log4NET how to perform diagnostic logging. Log4VFP includes two sample configuration files, compact.config and verbose.config, that provide logging to a text file in a compact and verbose format, respectively. The Log4VFP wrapper class creates a configuration file automatically if one doesn't exist.
 
-See Sample.prg for an example of how to use Log4VFP.
+## Starting Log4VFP
 
-## Using Log4VFP
+To initialize Log4VFP, you can either manage the .NET classes yourself or you can use the Log4VFP wrapper class.
 
-To use Log4VFP in your application, start by instantiating wwDotNetBridge (your application may already do this if you're using wwDotNetBridge for other things) and load the Log4VFP assembly:
+### Managing yourself
+
+Start by instantiating wwDotNetBridge (your application may already do this if you're using wwDotNetBridge for other things) and load the Log4VFP assembly:
 
 ```Fox
 do wwDotNetBridge
@@ -54,6 +58,26 @@ loLogger     = loLogManager.GetLogger(lcName)
 ```
 
 You can have multiple logging objects, each with a different logger name. The name is really only used for advanced purposes so you can pass anything you wish to the GetLogger method.
+
+### Using the wrapper class
+
+Start by running Log4VFP and then instantiate the Log4VFP class:
+
+```Fox
+do Log4VFP
+loLog = createobject('Log4VFP')
+```
+
+This sets up wwDotNetBridge and loads the Log4VFP assembly. Then call the Open method, specifying the name and path of the file to log to and the name of the logger (a SYS(2015) value is used by default) to create a logger object:
+
+```Fox
+lcLogFile = fullpath('applog.txt')
+loLogger  = loLog.Open(lcLogFile)
+```
+
+By default, Open uses log4net.config in the current folder as its configuration file (this file is created if it doesn't already exist) and the name of the Windows user running the application as the user name. If you want to change those, set the cConfigurationFile and cUser properties as necessary before calling Open.
+
+## Using Log4VFP
 
 Now that you have a logger object, you can write to the log file using one of these methods:
 
@@ -117,7 +141,7 @@ Using Windows 6.02 build 9200
 
 Log4NET uses a configuration file to determine how, where, and when to log. I won't go into detail on this because it's discussed at great length in the Log4NET documentation. We'll just look at some common use cases.
 
-Here's the content of compact.config that comes with Log4VFP:
+Here's the content of compact.config that comes with Log4VFP (this is also the content of log4net.config used by the wrapper class if it creates that file):
 
 ```
 <configuration>
@@ -245,7 +269,7 @@ CREATE TABLE [dbo].[Log] (
 
 ## Milestones
 
-You can record the start and end of certain processes in your application by starting "milestones". To start a milestone, call the StartMilestone method of the LogManager (not logger) object. For example:
+You can record the start and end of certain processes in your application by starting "milestones". To start a milestone, call the StartMilestone method of the LogManager (not logger) object if you're managing the .NET classes yourself or call the StartMilestone method of the wrapper class. For example, for managed yourself code:
 
 ```Fox
 loLogManager.StartMilestone()
@@ -254,7 +278,16 @@ inkey(5, 'H')
 loLogger.Info('Process done')
 ```
 
-results in this being logged (using compact.config):
+For wrapper code:
+
+```Fox
+loLog.StartMilestone()
+loLogger.InfoFormat('=================> Started process at {0}', datetime())
+inkey(5, 'H')
+loLogger.Info('Process done')
+```
+
+Both cases result in this being logged (using compact.config):
 
 ```
 2018-09-24 12:44:43,922 (2.3954147 seconds since app started, 0.0009998 seconds since last milestone) DHENNIG INFO - =================> Started process at 09/24/2018 12:44:43
