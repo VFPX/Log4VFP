@@ -100,7 +100,7 @@ loLogger.LogInfo('=================> App started')
 Depending on what the logging pattern is in the configuration file, the log file entry for this message may look like this:
 
 ```
-=================> App started  
+2018-10-03 09:30:17,971 =================> App started  
 0.0659599 seconds since previous milestone  
 Total time to run: 0.0679591 seconds
 ```
@@ -171,10 +171,16 @@ This specifies the following:
 verbose.config also specifies a text file but formats the log entries differently:
 
 ```
-<conversionPattern value="%message%newline%property{Milestone} seconds since previous milestone%newlineTotal time to run: %property{AppStart} seconds%newline%newline" />
+<conversionPattern value="%date %message%newline%property{Milestone} seconds since previous milestone%newlineTotal time to run: %property{AppStart} seconds%newline%newline" />
 ```
 
-In this case, they appear as the message, a carriage return, the number of seconds since the previous milestone, a carriage return, and the number of seconds since the application started.
+In this case, they appear as the date/time of the entry, the message, a carriage return, the number of seconds since the previous milestone, a carriage return, and the number of seconds since the application started. Here's an example:
+
+```
+2018-10-03 09:30:17,981 Error 12 occurred: Variable 'Y' is not found.
+0.0669598 seconds since previous milestone
+Total time to run: 0.0841964 seconds
+```
 
 database.config specifies logging to a table named Log in a SQL Server database named ErrorLog on my server:
 
@@ -262,12 +268,12 @@ You can record the start and end of certain processes in your application by sta
 ```Fox
 loLogger.StartMilestone('=================> Started process')
 * some code here that takes a while to run
-loLogger.Info('Process done')
+loLogger.LogInfo('Process done')
 ```
 
-Both cases result in this being logged (using compact.config):
+The following is logged (using compact.config):
 
 ```
-2018-09-24 12:44:43,922 (2.3954147 seconds since app started, 0.0009998 seconds since last milestone) DHENNIG INFO - =================> Started process at 09/24/2018 12:44:43
+2018-09-24 12:44:43,922 (2.3954147 seconds since app started, 0.0009998 seconds since last milestone) DHENNIG INFO - =================> Started process
 2018-09-24 12:44:48,922 (7.3955336 seconds since app started, 5.0011187 seconds since last milestone) DHENNIG INFO - Process done
 ```
