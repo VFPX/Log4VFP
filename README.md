@@ -277,3 +277,9 @@ The following is logged (using compact.config):
 2018-09-24 12:44:43,922 (2.3954147 seconds since app started, 0.0009998 seconds since last milestone) DHENNIG INFO - =================> Started process
 2018-09-24 12:44:48,922 (7.3955336 seconds since app started, 5.0011187 seconds since last milestone) DHENNIG INFO - Process done
 ```
+
+## Updates
+
+### 2021-01-30
+
+* Updated to Log4Net 2.0.12.
