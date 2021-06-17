@@ -76,6 +76,10 @@ IF(!FILE(this.cConfigurationFile))
   THIS.CreateConfigurationFile()
 ENDIF
 
+IF EMPTY(lcLogFile)
+	lcLogFile = ''
+ENDIF
+
 IF EMPTY(lcName)
    lcName = SYS(2015)
 ENDIF
@@ -93,6 +97,17 @@ RETURN This.oLogger
 ENDFUNC
 *   Open
 
+************************************************************************
+*  SetProperty
+****************************************
+***  Function: Sets the value of a named property to the specified value (if the property doesn't exists, it's created).
+***    Assume:
+***      Pass: tcName - the name of the property, tuValue - the value of the property
+***    Return:
+************************************************************************
+function SetProperty(tcName, tuValue)
+This.oLogManager.SetProperty(tcName, transform(tuValue))
+endfunc
 
 ************************************************************************
 *  CreateLogConfiguration

@@ -36,6 +36,20 @@ namespace Log4VFP
         }
 
         /// <summary>
+        /// Sets the value of a named property to the specified value (if the property doesn't exists, it's created).
+        /// </summary>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <param name="value">
+        /// The value for the property.
+        /// </param>
+        public void SetProperty(string name, string value)
+        {
+            GlobalContext.Properties[name] = value;
+        }
+
+        /// <summary>
         /// Ensure log4net is shut down properly.
         /// </summary>
         public void Shutdown()

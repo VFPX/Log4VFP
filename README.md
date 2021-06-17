@@ -191,7 +191,7 @@ database.config specifies logging to a table named Log in a SQL Server database 
   </configSections>
   <log4net>
     <appender name="AdoNetAppender" type="log4net.Appender.AdoNetAppender">
-      <bufferSize value="100" />
+      <bufferSize value="1" />
       <connectionType value="System.Data.SqlClient.SqlConnection, System.Data, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
       <connectionString value="data source=MyServer;initial catalog=errorlog;integrated security=true;persist security info=True;" />
       <commandText value="INSERT INTO Log ([Date],[Thread],[Level],[Logger],[Message],[Exception]) VALUES (@log_date, @thread, @log_level, @logger, @message, @exception)" />
@@ -261,6 +261,22 @@ CREATE TABLE [dbo].[Log] (
 )
 ```
 
+## Custom properties
+
+You can add and set the values of custom properties to Log4VFP using the SetProperty method. Here's an example:
+
+```
+loLogger.SetProperty('MyCustomProperty', 'SomeValue')
+```
+
+If the specified property name doesn't exist, SetProperty creates it. Note that values are automatically converted to strings if necessary.
+
+To log a custom property, specify it as "%property{*PropertyName*}" in a log pattern. For example:
+
+```
+<conversionPattern value="%date %message%newline%My custom property = %property{MyCustomProperty}" />
+```
+
 ## Milestones
 
 You can record the start and end of certain processes in your application by starting "milestones". To start a milestone, call the StartMilestone method of the logger object, optionally passing it a message to log. For example:
@@ -279,6 +295,10 @@ The following is logged (using compact.config):
 ```
 
 ## Updates
+
+### 2021-06-16
+
+* Added SetProperty method which allows creating custom properties.
 
 ### 2021-01-30
 
