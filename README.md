@@ -294,7 +294,11 @@ The following is logged (using compact.config):
 2018-09-24 12:44:48,922 (7.3955336 seconds since app started, 5.0011187 seconds since last milestone) DHENNIG INFO - Process done
 ```
 
-## Updates
+## Helping with this project
+
+See [How to contribute to Log4VFP](.github/CONTRIBUTING.md) for details on how to help with this project.
+
+## Releases
 
 ### 2021-06-16
 
